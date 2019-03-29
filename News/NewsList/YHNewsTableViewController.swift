@@ -8,7 +8,7 @@
 import UIKit
 
 class YHNewsTableViewController: UITableViewController{
-    let dataManager : NewsListDataManager
+    let dataManager : ListDataManager
     let refresher : UIRefreshControl = {
         let refresh = UIRefreshControl()
         refresh.addTarget(self, action: #selector(refreshView), for: UIControl.Event.valueChanged)
@@ -16,9 +16,8 @@ class YHNewsTableViewController: UITableViewController{
     }()
     
     
-    
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
-        dataManager = NewsListDataManager.shared
+        dataManager = ListDataManager.shared
         super.init(nibName: nil, bundle: nil)
         dataManager.delegate = self
         tableView.refreshControl = refresher
@@ -35,7 +34,9 @@ class YHNewsTableViewController: UITableViewController{
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        dataManager.fetchNewList()
+        if dataManager.sortedList.count == 0 {
+            dataManager.fetchNewList()
+        }
     }
 
     // MARK: - Table view data source
@@ -65,16 +66,33 @@ class YHNewsTableViewController: UITableViewController{
         }
     }
     
+    override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+         dataManager.cancelTask(indexPath)
+    }
+    
+    
+    
+    // MARK:  Incremental loading
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let offseY = scrollView.contentOffset.y
         let contentH = scrollView.contentSize.height
-        if offseY + scrollView.frame.height + 20 > contentH{
+        if offseY + scrollView.frame.height + 10 > contentH{
             dataManager.fetchMoreData()
         }
     }
+    
+    // MARK:  Nevigation
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let detailVC = YHDetailViewController(dataManager.getNewViewModelFor(indexPath))
+        navigationController?.pushViewController(detailVC, animated: true)
+        
+    }
+    
 }
 
-extension YHNewsTableViewController : NewsListDataManagerDelegate{
+
+// MARK: ListDataManagerDelegate
+extension YHNewsTableViewController : ListDataManagerDelegate{
     func dataHasUpdated(needRefresh: Bool){
         DispatchQueue.main.async {
             if needRefresh{
@@ -85,13 +103,3 @@ extension YHNewsTableViewController : NewsListDataManagerDelegate{
     }
 }
 
-
-
-extension YHNewsTableViewController : UITableViewDataSourcePrefetching{
-    
-    func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
-        
-        
-    }
-    
-}

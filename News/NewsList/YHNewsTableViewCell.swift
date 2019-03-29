@@ -64,7 +64,6 @@ class YHNewsTableViewCell: UITableViewCell {
       
             stackView.trailingAnchor.constraint(equalTo: newsImage.leadingAnchor, constant: -layoutMargin),
             stackView.centerYAnchor.constraint(equalTo: newsImage.centerYAnchor),
-//            self.contentView.bottomAnchor.constraint(equalTo: newsImage.bottomAnchor, constant: layoutMargin),
             self.contentView.topAnchor.constraint(equalTo: newsImage.topAnchor, constant: -layoutMargin),
             ])
         let constraint = self.contentView.bottomAnchor.constraint(equalTo: newsImage.bottomAnchor, constant: layoutMargin)
@@ -82,8 +81,8 @@ class YHNewsTableViewCell: UITableViewCell {
     private func setImageHW(_ width: Int, _ height: Int){
         imageH?.isActive = false
         imageW?.isActive = false
-        imageH = newsImage.heightAnchor.constraint(equalToConstant: CGFloat(integerLiteral: width))
-        imageW = newsImage.widthAnchor.constraint(equalToConstant: CGFloat(integerLiteral: height))
+        imageH = newsImage.heightAnchor.constraint(equalToConstant: CGFloat(integerLiteral: height))
+        imageW = newsImage.widthAnchor.constraint(equalToConstant: CGFloat(integerLiteral: width))
         imageH?.isActive = true
         imageW?.isActive = true
         setNeedsLayout()

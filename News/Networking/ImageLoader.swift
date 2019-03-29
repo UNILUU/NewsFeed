@@ -10,6 +10,7 @@ import UIKit
 
 class ImageLoader {
     static let shared = ImageLoader()
+    var dict = [String: URLSessionDataTask]()
     
     private let session = URLSession.shared
     private init(){
@@ -21,9 +22,10 @@ class ImageLoader {
             return
         }
         
-        let task = URLSession.shared.dataTask(with: url) { (data, _, error) in
+        let task = URLSession.shared.dataTask(with: url) { [weak self](data, _, error) in
             guard error == nil else {
                 completion(Result.failure)
+                self?.dict[urlString] = nil
                 return
             }
             
@@ -31,8 +33,18 @@ class ImageLoader {
                 DispatchQueue.main.async {
                     completion(Result.success(image))
                 }
+                self?.dict[urlString] = nil
             }
         }
         task.resume()
+        dict[urlString] = task
+    }
+    
+    func cancelTask(imageURL : String){
+        if let task = dict[imageURL]{
+            task.cancel()
+            print("cancel")
+            dict[imageURL] = nil
+        }
     }
 }
