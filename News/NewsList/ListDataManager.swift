@@ -34,7 +34,7 @@ class ListDataManager {
         newsViewModel = [String: NewsViewModel]()
         sortedList = [NewsViewModel]()
         moreNews = [NewsID]()
-//        loadModelFromDisk()
+        loadModelFromDisk()
         
     }
     
@@ -94,7 +94,7 @@ extension ListDataManager{
             return
         }
         //Check disk
-        if let image = UIImage.getPNGFromDocumentDirectory(name: name){
+        if let image = UIImage.getPNGFrom(directory: .cachesDirectory, name: name){
             thumbnailCache.setObject(image, forKey: urlString as NSString)
             print("got image from disk \(name)")
             DispatchQueue.main.async {
@@ -110,7 +110,7 @@ extension ListDataManager{
                     completion(image)
                 }
                 //save image to disk
-                try? image.save(directory: .documentDirectory, name: name)
+                try? image.save(directory: .cachesDirectory, name: name)
                 self?.thumbnailCache.setObject(image, forKey: urlString as NSString)
             }else {
                 completion(nil)

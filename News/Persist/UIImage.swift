@@ -9,9 +9,9 @@ import Foundation
 import UIKit
 extension UIImage {
     
-    static func getPNGFromDocumentDirectory(name: String) -> UIImage? {
-        return UIImage(contentsOfFile:FileManager.documentDirectoryURL.appendingPathComponent(name).appendingPathExtension("jpg").path
-        )
+    static func getPNGFrom(directory: FileManager.SearchPathDirectory, name: String) -> UIImage? {
+        let url = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+        return UIImage(contentsOfFile: url.appendingPathComponent(name).appendingPathExtension("jpg").path)
     }
     
     func save(directory: FileManager.SearchPathDirectory, name: String) throws {

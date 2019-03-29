@@ -29,6 +29,9 @@ class YHNewsTableViewController: UITableViewController{
     }
     @objc func refreshView(){
         dataManager.fetchNewList()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {   //add for offline support
+            self.refresher.endRefreshing()
+        }
     }
     
     
