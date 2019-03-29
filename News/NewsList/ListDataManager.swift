@@ -34,7 +34,7 @@ class ListDataManager {
         newsViewModel = [String: NewsViewModel]()
         sortedList = [NewsViewModel]()
         moreNews = [NewsID]()
-        loadModelFromDisk()
+//        loadModelFromDisk()
         
     }
     
@@ -46,7 +46,6 @@ class ListDataManager {
 
 // MARK:  load list
 extension ListDataManager{
-    //initial load or pull to refresh
     func fetchNewList(){
         listLoader.loadNewList(20) { (result) in
             if case .success(let res) = result{
@@ -56,7 +55,6 @@ extension ListDataManager{
         }
     }
     
-    //fetch data from increamental loading
     func fetchMoreData(){
         var i = 0
         var ids = [String]()

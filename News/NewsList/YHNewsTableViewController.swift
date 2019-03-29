@@ -85,7 +85,6 @@ class YHNewsTableViewController: UITableViewController{
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let detailVC = YHDetailViewController(dataManager.getNewViewModelFor(indexPath))
         navigationController?.pushViewController(detailVC, animated: true)
-        
     }
     
 }

@@ -43,7 +43,6 @@ class ImageLoader {
     func cancelTask(imageURL : String){
         if let task = dict[imageURL]{
             task.cancel()
-            print("cancel")
             dict[imageURL] = nil
         }
     }
