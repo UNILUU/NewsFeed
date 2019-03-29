@@ -20,10 +20,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         nvVC.navigationBar.tintColor = UIColor.white
         window?.rootViewController = nvVC
         window?.makeKeyAndVisible()
-        let memoryCapacity = 500 * 1024 * 1024
-        let diskCpacity = 500 * 1024 * 1024
-        let urlCache = URLCache(memoryCapacity: memoryCapacity, diskCapacity: diskCpacity, diskPath: nil)
-        URLCache.shared = urlCache
+
         return true
     }
 
