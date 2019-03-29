@@ -64,14 +64,12 @@ class YHNewsTableViewCell: UITableViewCell {
       
             stackView.trailingAnchor.constraint(equalTo: newsImage.leadingAnchor, constant: -layoutMargin),
             stackView.centerYAnchor.constraint(equalTo: newsImage.centerYAnchor),
-            self.contentView.bottomAnchor.constraint(equalTo: newsImage.bottomAnchor, constant: layoutMargin),
+//            self.contentView.bottomAnchor.constraint(equalTo: newsImage.bottomAnchor, constant: layoutMargin),
             self.contentView.topAnchor.constraint(equalTo: newsImage.topAnchor, constant: -layoutMargin),
             ])
-        
-        imageH = imageView?.heightAnchor.constraint(equalToConstant: 100)
-        imageW = imageView?.widthAnchor.constraint(equalToConstant: 100)
-        imageW?.isActive = true
-        imageH?.isActive = true
+        let constraint = self.contentView.bottomAnchor.constraint(equalTo: newsImage.bottomAnchor, constant: layoutMargin)
+        constraint.priority = .defaultHigh
+        constraint.isActive = true
     }
     
     
@@ -84,8 +82,10 @@ class YHNewsTableViewCell: UITableViewCell {
     private func setImageHW(_ width: Int, _ height: Int){
         imageH?.isActive = false
         imageW?.isActive = false
-        newsImage.heightAnchor.constraint(equalToConstant: CGFloat(integerLiteral: width)).isActive = true
-        newsImage.widthAnchor.constraint(equalToConstant: CGFloat(integerLiteral: height)).isActive = true
+        imageH = newsImage.heightAnchor.constraint(equalToConstant: CGFloat(integerLiteral: width))
+        imageW = newsImage.widthAnchor.constraint(equalToConstant: CGFloat(integerLiteral: height))
+        imageH?.isActive = true
+        imageW?.isActive = true
         setNeedsLayout()
     }
     
@@ -94,7 +94,11 @@ class YHNewsTableViewCell: UITableViewCell {
         title.text = news.title
         publishLabel.text = news.publicTime
         publisherLabel.text = news.publisherName
-        setImageHW(news.thumbNailW, news.thumbNailH)
+        if let width = news.thumbnailW, let height = news.thumbnailH{
+            setImageHW(width, height)
+        }else{
+            setImageHW(140, 140)  //default height and width
+        }
     }
 
     override func prepareForReuse() {
@@ -102,7 +106,7 @@ class YHNewsTableViewCell: UITableViewCell {
         title.text = nil
         publisherLabel.text = nil
         newsImage.image = UIImage(named: "yahoo")
-        imageW?.isActive = true
-        imageH?.isActive = true
+        imageH?.isActive = false
+        imageW?.isActive = false
     }
 }

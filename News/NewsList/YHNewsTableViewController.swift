@@ -68,8 +68,8 @@ class YHNewsTableViewController: UITableViewController{
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let offseY = scrollView.contentOffset.y
         let contentH = scrollView.contentSize.height
-        if offseY > contentH - scrollView.frame.height{
-//            dataManager.loadMoreMovie()
+        if offseY + scrollView.frame.height + 20 > contentH{
+            dataManager.fetchMoreData()
         }
     }
 }

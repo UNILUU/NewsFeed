@@ -13,13 +13,14 @@ protocol NewsListDataManagerDelegate : class{
     func dataHasUpdated(needRefresh: Bool)
 }
 
-
 class NewsListDataManager {
     static let shared = NewsListDataManager()
     let listLoader = NewsListLoader.shared
     let imageLoader = ImageLoader.shared
     private var newsMap : [String: News]
     private var newsViewModel : [String: NewsViewModel]
+    private var moreNews : [NewsID]
+    
     var sortedList : [NewsViewModel]{
         didSet{
             delegate?.dataHasUpdated(needRefresh: true)
@@ -34,16 +35,34 @@ class NewsListDataManager {
         newsMap = [String: News]()
         newsViewModel = [String: NewsViewModel]()
         sortedList = [NewsViewModel]()
+        moreNews = [NewsID]()
     }
     
     
     func fetchNewList(){
-        listLoader.loadNewList(50) { (result) in
-            if case .success(let list) = result{
-                self.mergeNewList(list.items.result)
+        listLoader.loadNewList(10) { (result) in
+            if case .success(let res) = result{
+                self.mergeNewList(res.items.result)
+                self.mergeMore(res.more.result)
             }
         }
     }
+    
+    func fetchMoreData(){
+        var i = 0
+        var ids = [String]()
+        while i < moreNews.count && i < 10{
+            ids.append(moreNews.removeFirst().uuid)
+            i += 1
+        }
+        listLoader.fetchMore(ids) { (result) in
+            if case .success(let res) = result {
+                self.mergeNewList(res.items.result)
+            }
+        }
+    }
+
+    
     
     func getNewViewModelFor(_ index: IndexPath) -> NewsViewModel {
         return sortedList[index.row]
@@ -51,7 +70,11 @@ class NewsListDataManager {
     
     
     func getImageFor(_ index : IndexPath, completion: @escaping (UIImage? ) -> Void){
-        let urlString = sortedList[index.row].thumbNailURL
+        guard let urlString = sortedList[index.row].thumbnailURL else {
+            completion(nil)
+            return
+        }
+        
         //find in cache
         if let image = imageCache.object(forKey: urlString as NSString){
             DispatchQueue.main.async {
@@ -61,6 +84,7 @@ class NewsListDataManager {
         }
 
         //download
+        print("download")
         imageLoader.downloadImage(urlString) { [weak self] (result) in
             if case .success(let image) = result {
                 DispatchQueue.main.async {
@@ -93,6 +117,14 @@ class NewsListDataManager {
             sortedList = newsViewModel.values.sorted(by: >)
         }else{
             delegate?.dataHasUpdated(needRefresh: false)
+        }
+    }
+    
+    private func mergeMore(_ response : [NewsID]){
+        for id in response{
+            if !moreNews.contains(id) && newsMap[id.uuid] == nil{
+                moreNews.append(id)
+            }
         }
     }
 }
