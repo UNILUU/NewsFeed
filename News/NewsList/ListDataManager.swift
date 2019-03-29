@@ -39,8 +39,10 @@ class ListDataManager {
     }
     
     func loadModelFromDisk() {
-        let res = Storage<News>.retrieve("MODEL", from: Storage.Directory.documents, as: [News].self )
-        self.mergeNewList(res)
+        if let res = Storage.retrieve("Model", from: .caches, as: [News].self ){
+            self.mergeNewList(res)
+        }
+
     }
 }
 
@@ -68,7 +70,7 @@ extension ListDataManager{
             }
         }
     }
-
+    
     
     func getNewViewModelFor(_ index: IndexPath) -> NewsViewModel {
         return sortedList[index.row]
@@ -84,7 +86,7 @@ extension ListDataManager{
             return
         }
         let url = URL(string: urlString)!
-        let name = url.lastPathComponent
+        let name = String(url.lastPathComponent.split(separator: ".")[0])
         
         //Find in cache
         if let image = thumbnailCache.object(forKey: urlString as NSString){
@@ -94,11 +96,11 @@ extension ListDataManager{
             return
         }
         //Check disk
-        if let image = UIImage.getPNGFrom(directory: .cachesDirectory, name: name){
+        if let image = UIImage.getImageFrom(directory: .cachesDirectory, name: name){
             thumbnailCache.setObject(image, forKey: urlString as NSString)
             print("got image from disk \(name)")
             DispatchQueue.main.async {
-               completion(image)
+                completion(image)
             }
             return
         }
@@ -127,9 +129,9 @@ extension ListDataManager{
     
     
 }
-    
-    
- // MARK: - merge data
+
+
+// MARK: - merge data
 extension ListDataManager{
     private func mergeNewList(_ responselist : [News]) {
         var hasChange = false
@@ -148,7 +150,8 @@ extension ListDataManager{
             }
         }
         if hasChange{
-            Storage<News>.store(Array(newsMap.values), to: Storage.Directory.documents, as: "MODEL")
+            Storage.store(Array(newsMap.values), to: .caches, as: "Model")
+//            Storage.store(Array(newsMap.values), to: .caches as: "MODEL")
             sortedList = newsViewModel.values.sorted(by: >)
         }else{
             delegate?.dataHasUpdated(needRefresh: false)
