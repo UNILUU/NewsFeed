@@ -15,7 +15,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         window = UIWindow(frame: UIScreen.main.bounds)
-        let nvVC = UINavigationController(rootViewController: YHNewsTableViewController(nibName: nil, bundle: nil))
+        let nvVC = UINavigationController(rootViewController: NewsTableViewController(nibName: nil, bundle: nil))
         nvVC.navigationBar.barTintColor  = UIColor.purple
         nvVC.navigationBar.tintColor = UIColor.white
         window?.rootViewController = nvVC

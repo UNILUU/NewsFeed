@@ -1,13 +1,13 @@
 //
-//  YHNewsTableViewController.swift
+//  NewsTableViewController.swift
 //  News
 //
-//  Created by Xiaolu Tian on 3/27/19.
+//  Created by Xiaolu Tian on 3/28/19.
 //
 
 import UIKit
 
-class YHNewsTableViewController: UITableViewController{
+class NewsTableViewController: UITableViewController{
     let dataManager : ListDataManager
     let refresher : UIRefreshControl = {
         let refresh = UIRefreshControl()
@@ -21,7 +21,7 @@ class YHNewsTableViewController: UITableViewController{
         super.init(nibName: nil, bundle: nil)
         dataManager.delegate = self
         tableView.refreshControl = refresher
-        tableView.register(YHNewsTableViewCell.self, forCellReuseIdentifier: YHNewsTableViewCell.reuseIdentifier)
+        tableView.register(NewsTableViewCell.self, forCellReuseIdentifier: NewsTableViewCell.reuseIdentifier)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -52,18 +52,18 @@ class YHNewsTableViewController: UITableViewController{
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier:  YHNewsTableViewCell.reuseIdentifier, for: indexPath)
-        assert(cell is YHNewsTableViewCell, "cell not valid")
-        let dequeCell = cell as! YHNewsTableViewCell
+        let cell = tableView.dequeueReusableCell(withIdentifier:  NewsTableViewCell.reuseIdentifier, for: indexPath)
+        assert(cell is NewsTableViewCell, "cell not valid")
+        let dequeCell = cell as! NewsTableViewCell
         dequeCell.setData(dataManager.getNewViewModelFor(indexPath))
         return dequeCell
     }
     
     
     override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        assert(cell is YHNewsTableViewCell, "cell not valid")
+        assert(cell is NewsTableViewCell, "cell not valid")
         dataManager.getImageFor(indexPath) { [weak tableView] (image) in
-            if let image = image, let tableCell = tableView?.cellForRow(at: indexPath) as? YHNewsTableViewCell{
+            if let image = image, let tableCell = tableView?.cellForRow(at: indexPath) as? NewsTableViewCell{
                 tableCell.newsImage.image = image
             }
         }
@@ -94,7 +94,7 @@ class YHNewsTableViewController: UITableViewController{
 
 
 // MARK: ListDataManagerDelegate
-extension YHNewsTableViewController : ListDataManagerDelegate{
+extension NewsTableViewController : ListDataManagerDelegate{
     func dataHasUpdated(needRefresh: Bool){
         DispatchQueue.main.async {
             if needRefresh{

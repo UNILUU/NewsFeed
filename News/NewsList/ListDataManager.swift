@@ -2,7 +2,7 @@
 //  ListDataManager.swift
 //  News
 //
-//  Created by Xiaolu Tian on 3/27/19.
+//  Created by Xiaolu Tian on 3/28/19.
 //
 
 import Foundation
@@ -39,7 +39,7 @@ class ListDataManager {
     }
     
     func loadModelFromDisk() {
-        if let res = Storage.retrieve("Model", from: .caches, as: [News].self ){
+        if let res = Storage.retrieve("Model", from: .cachesDirectory, as: [News].self ){
             self.mergeNewList(res)
         }
 
@@ -81,12 +81,11 @@ extension ListDataManager{
 // MARK: - Fetch Image
 extension ListDataManager{
     func getImageFor(_ index : IndexPath, completion: @escaping (UIImage? ) -> Void){
-        guard let urlString = sortedList[index.row].thumbnailURL else {
+        guard let urlString = sortedList[index.row].thumbnailURL, let url = URL(string: urlString) else {
             completion(nil)
             return
         }
-        let url = URL(string: urlString)!
-        let name = String(url.lastPathComponent.split(separator: ".")[0])
+        let filename = String(url.lastPathComponent.split(separator: ".")[0] + "_full")
         
         //Find in cache
         if let image = thumbnailCache.object(forKey: urlString as NSString){
@@ -96,9 +95,9 @@ extension ListDataManager{
             return
         }
         //Check disk
-        if let image = UIImage.getImageFrom(directory: .cachesDirectory, name: name){
+        if let image = UIImage.getImageFrom(directory: .cachesDirectory, name: filename){
             thumbnailCache.setObject(image, forKey: urlString as NSString)
-            print("got image from disk \(name)")
+            print("got image from disk \(filename)")
             DispatchQueue.main.async {
                 completion(image)
             }
@@ -106,13 +105,13 @@ extension ListDataManager{
         }
         
         //download
-        imageLoader.downloadImage(urlString) { [weak self] (result) in
+        imageLoader.downloadImage(url) { [weak self] (result) in
             if case .success(let image) = result {
                 DispatchQueue.main.async {
                     completion(image)
                 }
                 //save image to disk
-                try? image.save(directory: .cachesDirectory, name: name)
+                try? image.save(directory: .cachesDirectory, name: filename)
                 self?.thumbnailCache.setObject(image, forKey: urlString as NSString)
             }else {
                 completion(nil)
@@ -150,8 +149,7 @@ extension ListDataManager{
             }
         }
         if hasChange{
-            Storage.store(Array(newsMap.values), to: .caches, as: "Model")
-//            Storage.store(Array(newsMap.values), to: .caches as: "MODEL")
+            Storage.store(Array(newsMap.values), to: .cachesDirectory , as: "Model")
             sortedList = newsViewModel.values.sorted(by: >)
         }else{
             delegate?.dataHasUpdated(needRefresh: false)

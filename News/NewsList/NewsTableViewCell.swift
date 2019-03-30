@@ -1,13 +1,13 @@
 //
-//  YHNewsTableViewCell.swift
+//  NewsTableViewCell.swift
 //  News
 //
-//  Created by Xiaolu Tian on 3/27/19.
+//  Created by Xiaolu Tian on 3/28/19.
 //
 
 import UIKit
 
-class YHNewsTableViewCell: UITableViewCell {
+class NewsTableViewCell: UITableViewCell {
     var imageH : NSLayoutConstraint?
     var imageW : NSLayoutConstraint?
     
